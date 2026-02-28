@@ -10,6 +10,9 @@
         body {
             font-family: Arial, sans-serif;
             background-color: #121212;
+            background-image: url('fond.jpg');
+            background-size: cover;
+            background-attachment: fixed;
             color: #ffffff;
             margin: 0;
             padding: 0;
@@ -21,10 +24,10 @@
             overflow-y: auto;
         }
         .calculator {
-            background-color: #1e1e1e;
+            background-color: rgba(30, 30, 30, 0.9);
             border-radius: 10px;
             padding: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
             width: 95%;
             max-width: 500px;
             margin: 0 auto;
@@ -60,20 +63,21 @@
             outline: none;
         }
         .result {
-            font-size: 24px;
+            font-size: 26px;
             font-weight: bold;
             text-align: center;
             margin: 20px 0;
             padding: 10px;
             border-radius: 5px;
+            color: black;
         }
         .profit {
-            color: #00ff00;
-            background-color: rgba(0, 255, 0, 0.1);
+            color: #000000;
+            background-color: rgba(0, 255, 0, 0.3);
         }
         .loss {
-            color: #ff0000;
-            background-color: rgba(255, 0, 0, 0.1);
+            color: #000000;
+            background-color: rgba(255, 0, 0, 0.3);
         }
         button {
             background-color: #4CAF50;
@@ -100,7 +104,7 @@
         .buttons {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 50px; /* Espace pour éviter que le clavier ne cache les boutons */
+            margin-bottom: 50px;
         }
         .emoji {
             font-size: 24px;
@@ -180,7 +184,7 @@
             const prixVente = prixVenteInput.value ? parseFloat(prixVenteInput.value) : null;
             const benefice = beneficeInput.value ? parseFloat(beneficeInput.value) : null;
 
-            // Cas 1 : Prix d'achat + taux → prix de vente, bénéfice, coefficient
+            // Logique de calcul (inchangée)
             if (prixAchat !== null && taux !== null) {
                 const nouveauPrixVente = prixAchat * (1 + taux / 100);
                 const nouveauBenefice = nouveauPrixVente - prixAchat;
@@ -189,7 +193,6 @@
                 beneficeInput.value = nouveauBenefice.toFixed(2);
                 coefficientInput.value = nouveauCoefficient.toFixed(2);
             }
-            // Cas 2 : Prix d'achat + coefficient → prix de vente, bénéfice, taux
             else if (prixAchat !== null && coefficient !== null) {
                 const nouveauPrixVente = prixAchat * coefficient;
                 const nouveauBenefice = nouveauPrixVente - prixAchat;
@@ -198,7 +201,6 @@
                 beneficeInput.value = nouveauBenefice.toFixed(2);
                 tauxInput.value = nouveauTaux.toFixed(2);
             }
-            // Cas 3 : Prix d'achat + prix de vente → coefficient, taux, bénéfice
             else if (prixAchat !== null && prixVente !== null) {
                 const nouveauBenefice = prixVente - prixAchat;
                 const nouveauTaux = ((prixVente - prixAchat) / prixAchat) * 100;
@@ -207,7 +209,6 @@
                 tauxInput.value = nouveauTaux.toFixed(2);
                 coefficientInput.value = nouveauCoefficient.toFixed(2);
             }
-            // Cas 4 : Prix d'achat + bénéfice → prix de vente, coefficient, taux
             else if (prixAchat !== null && benefice !== null) {
                 const nouveauPrixVente = prixAchat + benefice;
                 const nouveauTaux = (benefice / prixAchat) * 100;
@@ -216,7 +217,6 @@
                 tauxInput.value = nouveauTaux.toFixed(2);
                 coefficientInput.value = nouveauCoefficient.toFixed(2);
             }
-            // Cas 5 : Prix de vente + taux → prix d'achat, bénéfice, coefficient
             else if (prixVente !== null && taux !== null) {
                 const nouveauPrixAchat = prixVente / (1 + taux / 100);
                 const nouveauBenefice = prixVente - nouveauPrixAchat;
@@ -225,7 +225,6 @@
                 beneficeInput.value = nouveauBenefice.toFixed(2);
                 coefficientInput.value = nouveauCoefficient.toFixed(2);
             }
-            // Cas 6 : Prix de vente + coefficient → prix d'achat, bénéfice, taux
             else if (prixVente !== null && coefficient !== null) {
                 const nouveauPrixAchat = prixVente / coefficient;
                 const nouveauBenefice = prixVente - nouveauPrixAchat;
@@ -234,7 +233,6 @@
                 beneficeInput.value = nouveauBenefice.toFixed(2);
                 tauxInput.value = nouveauTaux.toFixed(2);
             }
-            // Cas 7 : Prix de vente + bénéfice → prix d'achat, coefficient, taux
             else if (prixVente !== null && benefice !== null) {
                 const nouveauPrixAchat = prixVente - benefice;
                 const nouveauTaux = (benefice / nouveauPrixAchat) * 100;
@@ -243,7 +241,6 @@
                 tauxInput.value = nouveauTaux.toFixed(2);
                 coefficientInput.value = nouveauCoefficient.toFixed(2);
             }
-            // Cas 8 : Bénéfice + taux → prix d'achat, prix de vente, coefficient
             else if (benefice !== null && taux !== null) {
                 const nouveauPrixAchat = benefice / (taux / 100);
                 const nouveauPrixVente = nouveauPrixAchat + benefice;
@@ -252,7 +249,6 @@
                 prixVenteInput.value = nouveauPrixVente.toFixed(2);
                 coefficientInput.value = nouveauCoefficient.toFixed(2);
             }
-            // Cas 9 : Bénéfice + coefficient → prix d'achat, prix de vente, taux
             else if (benefice !== null && coefficient !== null) {
                 const nouveauPrixAchat = benefice / (coefficient - 1);
                 const nouveauPrixVente = nouveauPrixAchat * coefficient;
@@ -262,14 +258,14 @@
                 tauxInput.value = nouveauTaux.toFixed(2);
             }
 
-            // Afficher le résultat
+            // Affichage du résultat (chiffres en noir et plus gros)
             const resultatElement = document.getElementById('resultat');
             const beneficeFinal = parseFloat(beneficeInput.value) || 0;
             if (beneficeFinal >= 0) {
-                resultatElement.innerHTML = `Bénéfice net : ${beneficeFinal.toFixed(2)} € <span class="emoji">🤑🤩🤌</span>`;
+                resultatElement.innerHTML = `<strong>Bénéfice net : ${beneficeFinal.toFixed(2)} €</strong> <span class="emoji">🤑🤩🤌</span>`;
                 resultatElement.className = 'result profit';
             } else {
-                resultatElement.innerHTML = `Déficit net : ${Math.abs(beneficeFinal).toFixed(2)} € <span class="emoji">👀😱😡😭</span>`;
+                resultatElement.innerHTML = `<strong>Déficit net : ${Math.abs(beneficeFinal).toFixed(2)} €</strong> <span class="emoji">👀😱😡😭</span>`;
                 resultatElement.className = 'result loss';
             }
 
