@@ -2,29 +2,37 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Calculateur de Marge</title>
-    <link rel="icon" href="favicon.png" type="image/png">
-    <link rel="apple-touch-icon" href="favicon.png">
+    <link rel="icon" href="Flavicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="Flavicon.png">
     <style>
         body {
             font-family: Arial, sans-serif;
             background-color: #121212;
             color: #ffffff;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             min-height: 100vh;
+            padding-top: 20px;
+            overflow-y: auto;
         }
         .calculator {
             background-color: #1e1e1e;
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-            width: 100%;
+            width: 95%;
             max-width: 500px;
+            margin: 0 auto;
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
         }
         .input-group {
             margin-bottom: 15px;
@@ -33,20 +41,23 @@
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
+            font-size: 16px;
         }
         input[type="number"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             border: 2px solid #444;
             border-radius: 5px;
             background-color: white;
             color: black;
-            font-size: 16px;
+            font-size: 18px;
+            font-weight: bold;
             box-sizing: border-box;
         }
         input[type="number"]:focus {
             border-color: #00ff00;
             box-shadow: 0 0 10px #00ff00;
+            outline: none;
         }
         .result {
             font-size: 24px;
@@ -68,11 +79,12 @@
             background-color: #4CAF50;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 20px;
             margin: 5px;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
             width: 48%;
             transition: background-color 0.3s;
         }
@@ -88,6 +100,7 @@
         .buttons {
             display: flex;
             justify-content: space-between;
+            margin-bottom: 50px; /* Espace pour éviter que le clavier ne cache les boutons */
         }
         .emoji {
             font-size: 24px;
@@ -97,31 +110,31 @@
 </head>
 <body>
     <div class="calculator">
-        <h1 style="text-align: center;">Calculateur de Marge</h1>
+        <h1 style="text-align: center; margin-bottom: 20px;">Calculateur de Marge</h1>
 
         <div class="input-group">
             <label for="prixAchat">Prix d'achat net (€)</label>
-            <input type="number" id="prixAchat" placeholder="0" step="0.01">
+            <input type="number" id="prixAchat" placeholder="0" step="0.01" inputmode="decimal">
         </div>
 
         <div class="input-group">
             <label for="taux">Taux applicable (%)</label>
-            <input type="number" id="taux" placeholder="0" step="0.01">
+            <input type="number" id="taux" placeholder="0" step="0.01" inputmode="decimal">
         </div>
 
         <div class="input-group">
             <label for="coefficient">Coefficient</label>
-            <input type="number" id="coefficient" placeholder="0" step="0.01">
+            <input type="number" id="coefficient" placeholder="0" step="0.01" inputmode="decimal">
         </div>
 
         <div class="input-group">
             <label for="prixVente">Prix de vente (€)</label>
-            <input type="number" id="prixVente" placeholder="0" step="0.01">
+            <input type="number" id="prixVente" placeholder="0" step="0.01" inputmode="decimal">
         </div>
 
         <div class="input-group">
             <label for="benefice">Bénéfice net (€)</label>
-            <input type="number" id="benefice" placeholder="0" step="0.01">
+            <input type="number" id="benefice" placeholder="0" step="0.01" inputmode="decimal">
         </div>
 
         <div class="result" id="resultat">
@@ -168,7 +181,7 @@
             const benefice = beneficeInput.value ? parseFloat(beneficeInput.value) : null;
 
             // Cas 1 : Prix d'achat + taux → prix de vente, bénéfice, coefficient
-            if (prixAchat !== null && taux !== null && !prixVenteInput.dataset.locked && !beneficeInput.dataset.locked) {
+            if (prixAchat !== null && taux !== null) {
                 const nouveauPrixVente = prixAchat * (1 + taux / 100);
                 const nouveauBenefice = nouveauPrixVente - prixAchat;
                 const nouveauCoefficient = nouveauPrixVente / prixAchat;
@@ -177,7 +190,7 @@
                 coefficientInput.value = nouveauCoefficient.toFixed(2);
             }
             // Cas 2 : Prix d'achat + coefficient → prix de vente, bénéfice, taux
-            else if (prixAchat !== null && coefficient !== null && !prixVenteInput.dataset.locked && !tauxInput.dataset.locked) {
+            else if (prixAchat !== null && coefficient !== null) {
                 const nouveauPrixVente = prixAchat * coefficient;
                 const nouveauBenefice = nouveauPrixVente - prixAchat;
                 const nouveauTaux = ((nouveauPrixVente - prixAchat) / prixAchat) * 100;
@@ -186,7 +199,7 @@
                 tauxInput.value = nouveauTaux.toFixed(2);
             }
             // Cas 3 : Prix d'achat + prix de vente → coefficient, taux, bénéfice
-            else if (prixAchat !== null && prixVente !== null && !coefficientInput.dataset.locked && !tauxInput.dataset.locked) {
+            else if (prixAchat !== null && prixVente !== null) {
                 const nouveauBenefice = prixVente - prixAchat;
                 const nouveauTaux = ((prixVente - prixAchat) / prixAchat) * 100;
                 const nouveauCoefficient = prixVente / prixAchat;
@@ -195,7 +208,7 @@
                 coefficientInput.value = nouveauCoefficient.toFixed(2);
             }
             // Cas 4 : Prix d'achat + bénéfice → prix de vente, coefficient, taux
-            else if (prixAchat !== null && benefice !== null && !prixVenteInput.dataset.locked && !tauxInput.dataset.locked) {
+            else if (prixAchat !== null && benefice !== null) {
                 const nouveauPrixVente = prixAchat + benefice;
                 const nouveauTaux = (benefice / prixAchat) * 100;
                 const nouveauCoefficient = nouveauPrixVente / prixAchat;
@@ -204,7 +217,7 @@
                 coefficientInput.value = nouveauCoefficient.toFixed(2);
             }
             // Cas 5 : Prix de vente + taux → prix d'achat, bénéfice, coefficient
-            else if (prixVente !== null && taux !== null && !prixAchatInput.dataset.locked && !beneficeInput.dataset.locked) {
+            else if (prixVente !== null && taux !== null) {
                 const nouveauPrixAchat = prixVente / (1 + taux / 100);
                 const nouveauBenefice = prixVente - nouveauPrixAchat;
                 const nouveauCoefficient = prixVente / nouveauPrixAchat;
@@ -213,7 +226,7 @@
                 coefficientInput.value = nouveauCoefficient.toFixed(2);
             }
             // Cas 6 : Prix de vente + coefficient → prix d'achat, bénéfice, taux
-            else if (prixVente !== null && coefficient !== null && !prixAchatInput.dataset.locked && !tauxInput.dataset.locked) {
+            else if (prixVente !== null && coefficient !== null) {
                 const nouveauPrixAchat = prixVente / coefficient;
                 const nouveauBenefice = prixVente - nouveauPrixAchat;
                 const nouveauTaux = ((prixVente - nouveauPrixAchat) / nouveauPrixAchat) * 100;
@@ -222,7 +235,7 @@
                 tauxInput.value = nouveauTaux.toFixed(2);
             }
             // Cas 7 : Prix de vente + bénéfice → prix d'achat, coefficient, taux
-            else if (prixVente !== null && benefice !== null && !prixAchatInput.dataset.locked && !tauxInput.dataset.locked) {
+            else if (prixVente !== null && benefice !== null) {
                 const nouveauPrixAchat = prixVente - benefice;
                 const nouveauTaux = (benefice / nouveauPrixAchat) * 100;
                 const nouveauCoefficient = prixVente / nouveauPrixAchat;
@@ -231,7 +244,7 @@
                 coefficientInput.value = nouveauCoefficient.toFixed(2);
             }
             // Cas 8 : Bénéfice + taux → prix d'achat, prix de vente, coefficient
-            else if (benefice !== null && taux !== null && !prixAchatInput.dataset.locked && !prixVenteInput.dataset.locked) {
+            else if (benefice !== null && taux !== null) {
                 const nouveauPrixAchat = benefice / (taux / 100);
                 const nouveauPrixVente = nouveauPrixAchat + benefice;
                 const nouveauCoefficient = nouveauPrixVente / nouveauPrixAchat;
@@ -240,7 +253,7 @@
                 coefficientInput.value = nouveauCoefficient.toFixed(2);
             }
             // Cas 9 : Bénéfice + coefficient → prix d'achat, prix de vente, taux
-            else if (benefice !== null && coefficient !== null && !prixAchatInput.dataset.locked && !prixVenteInput.dataset.locked) {
+            else if (benefice !== null && coefficient !== null) {
                 const nouveauPrixAchat = benefice / (coefficient - 1);
                 const nouveauPrixVente = nouveauPrixAchat * coefficient;
                 const nouveauTaux = (benefice / nouveauPrixAchat) * 100;
