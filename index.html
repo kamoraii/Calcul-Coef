@@ -1,161 +1,282 @@
-<script>
-    // Charger les valeurs depuis localStorage
-    function chargerValeurs() {
-        document.getElementById('prixAchat').value = localStorage.getItem('prixAchat') || '';
-        document.getElementById('taux').value = localStorage.getItem('taux') || '';
-        document.getElementById('coefficient').value = localStorage.getItem('coefficient') || '';
-        document.getElementById('prixVente').value = localStorage.getItem('prixVente') || '';
-        document.getElementById('benefice').value = localStorage.getItem('benefice') || '';
-        calculer(); // Recalculer au chargement
-    }
-
-    // Sauvegarder les valeurs dans localStorage
-    function sauvegarderValeurs() {
-        localStorage.setItem('prixAchat', document.getElementById('prixAchat').value);
-        localStorage.setItem('taux', document.getElementById('taux').value);
-        localStorage.setItem('coefficient', document.getElementById('coefficient').value);
-        localStorage.setItem('prixVente', document.getElementById('prixVente').value);
-        localStorage.setItem('benefice', document.getElementById('benefice').value);
-    }
-
-    // Variable pour éviter le recalcul pendant la navigation clavier
-    let isEditing = false;
-
-    // Calculer et afficher le résultat
-    function calculer() {
-        if (isEditing) return;
-
-        const prixAchatInput = document.getElementById('prixAchat');
-        const tauxInput = document.getElementById('taux');
-        const coefficientInput = document.getElementById('coefficient');
-        const prixVenteInput = document.getElementById('prixVente');
-        const beneficeInput = document.getElementById('benefice');
-
-        const prixAchat = prixAchatInput.value ? parseFloat(prixAchatInput.value) : null;
-        const taux = tauxInput.value ? parseFloat(tauxInput.value) : null;
-        const coefficient = coefficientInput.value ? parseFloat(coefficientInput.value) : null;
-        const prixVente = prixVenteInput.value ? parseFloat(prixVenteInput.value) : null;
-        const benefice = beneficeInput.value ? parseFloat(beneficeInput.value) : null;
-
-        // Cas 1 : Prix d'achat + taux → prix de vente, bénéfice, coefficient
-        if (prixAchat !== null && taux !== null) {
-            const nouveauPrixVente = prixAchat * (1 + taux / 100);
-            const nouveauBenefice = nouveauPrixVente - prixAchat;
-            const nouveauCoefficient = nouveauPrixVente / prixAchat;
-            prixVenteInput.value = nouveauPrixVente.toFixed(2);
-            beneficeInput.value = nouveauBenefice.toFixed(2);
-            coefficientInput.value = nouveauCoefficient.toFixed(2);
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculateur de Marge</title>
+    <link rel="icon" href="Flavicon.png" type="image/png">
+    <link rel="apple-touch-icon" href="Flavicon.png">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
-        // Cas 2 : Prix d'achat + coefficient → prix de vente, bénéfice, taux
-        else if (prixAchat !== null && coefficient !== null) {
-            const nouveauPrixVente = prixAchat * coefficient;
-            const nouveauBenefice = nouveauPrixVente - prixAchat;
-            const nouveauTaux = ((nouveauPrixVente - prixAchat) / prixAchat) * 100;
-            prixVenteInput.value = nouveauPrixVente.toFixed(2);
-            beneficeInput.value = nouveauBenefice.toFixed(2);
-            tauxInput.value = nouveauTaux.toFixed(2);
+        .calculator {
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 500px;
         }
-        // Cas 3 : Prix d'achat + prix de vente → coefficient, taux, bénéfice
-        else if (prixAchat !== null && prixVente !== null) {
-            const nouveauBenefice = prixVente - prixAchat;
-            const nouveauTaux = ((prixVente - prixAchat) / prixAchat) * 100;
-            const nouveauCoefficient = prixVente / prixAchat;
-            beneficeInput.value = nouveauBenefice.toFixed(2);
-            tauxInput.value = nouveauTaux.toFixed(2);
-            coefficientInput.value = nouveauCoefficient.toFixed(2);
+        .input-group {
+            margin-bottom: 15px;
         }
-        // Cas 4 : Prix d'achat + bénéfice → prix de vente, coefficient, taux
-        else if (prixAchat !== null && benefice !== null) {
-            const nouveauPrixVente = prixAchat + benefice;
-            const nouveauTaux = (benefice / prixAchat) * 100;
-            const nouveauCoefficient = nouveauPrixVente / prixAchat;
-            prixVenteInput.value = nouveauPrixVente.toFixed(2);
-            tauxInput.value = nouveauTaux.toFixed(2);
-            coefficientInput.value = nouveauCoefficient.toFixed(2);
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
-        // Cas 5 : Prix de vente + taux → prix d'achat, bénéfice, coefficient
-        else if (prixVente !== null && taux !== null) {
-            const nouveauPrixAchat = prixVente / (1 + taux / 100);
-            const nouveauBenefice = prixVente - nouveauPrixAchat;
-            const nouveauCoefficient = prixVente / nouveauPrixAchat;
-            prixAchatInput.value = nouveauPrixAchat.toFixed(2);
-            beneficeInput.value = nouveauBenefice.toFixed(2);
-            coefficientInput.value = nouveauCoefficient.toFixed(2);
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #444;
+            border-radius: 5px;
+            background-color: white;
+            color: black;
+            font-size: 16px;
+            box-sizing: border-box;
         }
-        // Cas 6 : Prix de vente + coefficient → prix d'achat, bénéfice, taux
-        else if (prixVente !== null && coefficient !== null) {
-            const nouveauPrixAchat = prixVente / coefficient;
-            const nouveauBenefice = prixVente - nouveauPrixAchat;
-            const nouveauTaux = ((prixVente - nouveauPrixAchat) / nouveauPrixAchat) * 100;
-            prixAchatInput.value = nouveauPrixAchat.toFixed(2);
-            beneficeInput.value = nouveauBenefice.toFixed(2);
-            tauxInput.value = nouveauTaux.toFixed(2);
+        input[type="number"]:focus {
+            border-color: #00ff00;
+            box-shadow: 0 0 10px #00ff00;
         }
-        // Cas 7 : Prix de vente + bénéfice → prix d'achat, coefficient, taux
-        else if (prixVente !== null && benefice !== null) {
-            const nouveauPrixAchat = prixVente - benefice;
-            const nouveauTaux = (benefice / nouveauPrixAchat) * 100;
-            const nouveauCoefficient = prixVente / nouveauPrixAchat;
-            prixAchatInput.value = nouveauPrixAchat.toFixed(2);
-            tauxInput.value = nouveauTaux.toFixed(2);
-            coefficientInput.value = nouveauCoefficient.toFixed(2);
+        .result {
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            border-radius: 5px;
         }
-        // Cas 8 : Bénéfice + taux → prix d'achat, prix de vente, coefficient
-        else if (benefice !== null && taux !== null) {
-            const nouveauPrixAchat = benefice / (taux / 100);
-            const nouveauPrixVente = nouveauPrixAchat + benefice;
-            const nouveauCoefficient = nouveauPrixVente / nouveauPrixAchat;
-            prixAchatInput.value = nouveauPrixAchat.toFixed(2);
-            prixVenteInput.value = nouveauPrixVente.toFixed(2);
-            coefficientInput.value = nouveauCoefficient.toFixed(2);
+        .profit {
+            color: #00ff00;
+            background-color: rgba(0, 255, 0, 0.1);
         }
-        // Cas 9 : Bénéfice + coefficient → prix d'achat, prix de vente, taux
-        else if (benefice !== null && coefficient !== null) {
-            const nouveauPrixAchat = benefice / (coefficient - 1);
-            const nouveauPrixVente = nouveauPrixAchat * coefficient;
-            const nouveauTaux = (benefice / nouveauPrixAchat) * 100;
-            prixAchatInput.value = nouveauPrixAchat.toFixed(2);
-            prixVenteInput.value = nouveauPrixVente.toFixed(2);
-            tauxInput.value = nouveauTaux.toFixed(2);
+        .loss {
+            color: #ff0000;
+            background-color: rgba(255, 0, 0, 0.1);
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 48%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button:last-child {
+            background-color: #f44336;
+        }
+        button:last-child:hover {
+            background-color: #d32f2f;
+        }
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+        .emoji {
+            font-size: 24px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1 style="text-align: center;">Calculateur de Marge</h1>
+
+        <div class="input-group">
+            <label for="prixAchat">Prix d'achat net (€)</label>
+            <input type="number" id="prixAchat" placeholder="0" step="0.01">
+        </div>
+
+        <div class="input-group">
+            <label for="taux">Taux applicable (%)</label>
+            <input type="number" id="taux" placeholder="0" step="0.01">
+        </div>
+
+        <div class="input-group">
+            <label for="coefficient">Coefficient</label>
+            <input type="number" id="coefficient" placeholder="0" step="0.01">
+        </div>
+
+        <div class="input-group">
+            <label for="prixVente">Prix de vente (€)</label>
+            <input type="number" id="prixVente" placeholder="0" step="0.01">
+        </div>
+
+        <div class="input-group">
+            <label for="benefice">Bénéfice net (€)</label>
+            <input type="number" id="benefice" placeholder="0" step="0.01">
+        </div>
+
+        <div class="result" id="resultat">
+            Résultat : 0.00 €
+        </div>
+
+        <div class="buttons">
+            <button onclick="calculer()">Calculer</button>
+            <button onclick="remiseAZero()">Remise à zéro</button>
+        </div>
+    </div>
+
+    <script>
+        // Charger les valeurs depuis localStorage
+        function chargerValeurs() {
+            document.getElementById('prixAchat').value = localStorage.getItem('prixAchat') || '';
+            document.getElementById('taux').value = localStorage.getItem('taux') || '';
+            document.getElementById('coefficient').value = localStorage.getItem('coefficient') || '';
+            document.getElementById('prixVente').value = localStorage.getItem('prixVente') || '';
+            document.getElementById('benefice').value = localStorage.getItem('benefice') || '';
         }
 
-        // Afficher le résultat
-        const resultatElement = document.getElementById('resultat');
-        const beneficeFinal = parseFloat(beneficeInput.value) || 0;
-        if (beneficeFinal >= 0) {
-            resultatElement.innerHTML = `Bénéfice net : ${beneficeFinal.toFixed(2)} € <span class="emoji">🤑🤩🤌</span>`;
-            resultatElement.className = 'result profit';
-        } else {
-            resultatElement.innerHTML = `Déficit net : ${Math.abs(beneficeFinal).toFixed(2)} € <span class="emoji">👀😱😡😭</span>`;
-            resultatElement.className = 'result loss';
+        // Sauvegarder les valeurs dans localStorage
+        function sauvegarderValeurs() {
+            localStorage.setItem('prixAchat', document.getElementById('prixAchat').value);
+            localStorage.setItem('taux', document.getElementById('taux').value);
+            localStorage.setItem('coefficient', document.getElementById('coefficient').value);
+            localStorage.setItem('prixVente', document.getElementById('prixVente').value);
+            localStorage.setItem('benefice', document.getElementById('benefice').value);
         }
 
-        sauvegarderValeurs();
-    }
+        // Calculer et afficher le résultat
+        function calculer() {
+            const prixAchatInput = document.getElementById('prixAchat');
+            const tauxInput = document.getElementById('taux');
+            const coefficientInput = document.getElementById('coefficient');
+            const prixVenteInput = document.getElementById('prixVente');
+            const beneficeInput = document.getElementById('benefice');
 
-    // Remise à zéro
-    function remiseAZero() {
-        document.getElementById('prixAchat').value = '';
-        document.getElementById('taux').value = '';
-        document.getElementById('coefficient').value = '';
-        document.getElementById('prixVente').value = '';
-        document.getElementById('benefice').value = '';
-        document.getElementById('resultat').innerHTML = 'Résultat : 0.00 €';
-        document.getElementById('resultat').className = 'result';
-        localStorage.clear();
-    }
+            const prixAchat = prixAchatInput.value ? parseFloat(prixAchatInput.value) : null;
+            const taux = tauxInput.value ? parseFloat(tauxInput.value) : null;
+            const coefficient = coefficientInput.value ? parseFloat(coefficientInput.value) : null;
+            const prixVente = prixVenteInput.value ? parseFloat(prixVenteInput.value) : null;
+            const benefice = beneficeInput.value ? parseFloat(beneficeInput.value) : null;
 
-    // Écouter les changements sur les champs
-    document.querySelectorAll('input[type="number"]').forEach(input => {
-        input.addEventListener('focus', () => { isEditing = true; });
-        input.addEventListener('blur', () => { isEditing = false; calculer(); });
-        input.addEventListener('keyup', (e) => {
-            // Ne pas recalculer si l'utilisateur utilise les flèches ou supprime
-            if ([37, 38, 39, 40, 8, 46].includes(e.keyCode)) return;
-            calculer();
-        });
-    });
+            // Cas 1 : Prix d'achat + taux → prix de vente, bénéfice, coefficient
+            if (prixAchat !== null && taux !== null && !prixVenteInput.dataset.locked && !beneficeInput.dataset.locked) {
+                const nouveauPrixVente = prixAchat * (1 + taux / 100);
+                const nouveauBenefice = nouveauPrixVente - prixAchat;
+                const nouveauCoefficient = nouveauPrixVente / prixAchat;
+                prixVenteInput.value = nouveauPrixVente.toFixed(2);
+                beneficeInput.value = nouveauBenefice.toFixed(2);
+                coefficientInput.value = nouveauCoefficient.toFixed(2);
+            }
+            // Cas 2 : Prix d'achat + coefficient → prix de vente, bénéfice, taux
+            else if (prixAchat !== null && coefficient !== null && !prixVenteInput.dataset.locked && !tauxInput.dataset.locked) {
+                const nouveauPrixVente = prixAchat * coefficient;
+                const nouveauBenefice = nouveauPrixVente - prixAchat;
+                const nouveauTaux = ((nouveauPrixVente - prixAchat) / prixAchat) * 100;
+                prixVenteInput.value = nouveauPrixVente.toFixed(2);
+                beneficeInput.value = nouveauBenefice.toFixed(2);
+                tauxInput.value = nouveauTaux.toFixed(2);
+            }
+            // Cas 3 : Prix d'achat + prix de vente → coefficient, taux, bénéfice
+            else if (prixAchat !== null && prixVente !== null && !coefficientInput.dataset.locked && !tauxInput.dataset.locked) {
+                const nouveauBenefice = prixVente - prixAchat;
+                const nouveauTaux = ((prixVente - prixAchat) / prixAchat) * 100;
+                const nouveauCoefficient = prixVente / prixAchat;
+                beneficeInput.value = nouveauBenefice.toFixed(2);
+                tauxInput.value = nouveauTaux.toFixed(2);
+                coefficientInput.value = nouveauCoefficient.toFixed(2);
+            }
+            // Cas 4 : Prix d'achat + bénéfice → prix de vente, coefficient, taux
+            else if (prixAchat !== null && benefice !== null && !prixVenteInput.dataset.locked && !tauxInput.dataset.locked) {
+                const nouveauPrixVente = prixAchat + benefice;
+                const nouveauTaux = (benefice / prixAchat) * 100;
+                const nouveauCoefficient = nouveauPrixVente / prixAchat;
+                prixVenteInput.value = nouveauPrixVente.toFixed(2);
+                tauxInput.value = nouveauTaux.toFixed(2);
+                coefficientInput.value = nouveauCoefficient.toFixed(2);
+            }
+            // Cas 5 : Prix de vente + taux → prix d'achat, bénéfice, coefficient
+            else if (prixVente !== null && taux !== null && !prixAchatInput.dataset.locked && !beneficeInput.dataset.locked) {
+                const nouveauPrixAchat = prixVente / (1 + taux / 100);
+                const nouveauBenefice = prixVente - nouveauPrixAchat;
+                const nouveauCoefficient = prixVente / nouveauPrixAchat;
+                prixAchatInput.value = nouveauPrixAchat.toFixed(2);
+                beneficeInput.value = nouveauBenefice.toFixed(2);
+                coefficientInput.value = nouveauCoefficient.toFixed(2);
+            }
+            // Cas 6 : Prix de vente + coefficient → prix d'achat, bénéfice, taux
+            else if (prixVente !== null && coefficient !== null && !prixAchatInput.dataset.locked && !tauxInput.dataset.locked) {
+                const nouveauPrixAchat = prixVente / coefficient;
+                const nouveauBenefice = prixVente - nouveauPrixAchat;
+                const nouveauTaux = ((prixVente - nouveauPrixAchat) / nouveauPrixAchat) * 100;
+                prixAchatInput.value = nouveauPrixAchat.toFixed(2);
+                beneficeInput.value = nouveauBenefice.toFixed(2);
+                tauxInput.value = nouveauTaux.toFixed(2);
+            }
+            // Cas 7 : Prix de vente + bénéfice → prix d'achat, coefficient, taux
+            else if (prixVente !== null && benefice !== null && !prixAchatInput.dataset.locked && !tauxInput.dataset.locked) {
+                const nouveauPrixAchat = prixVente - benefice;
+                const nouveauTaux = (benefice / nouveauPrixAchat) * 100;
+                const nouveauCoefficient = prixVente / nouveauPrixAchat;
+                prixAchatInput.value = nouveauPrixAchat.toFixed(2);
+                tauxInput.value = nouveauTaux.toFixed(2);
+                coefficientInput.value = nouveauCoefficient.toFixed(2);
+            }
+            // Cas 8 : Bénéfice + taux → prix d'achat, prix de vente, coefficient
+            else if (benefice !== null && taux !== null && !prixAchatInput.dataset.locked && !prixVenteInput.dataset.locked) {
+                const nouveauPrixAchat = benefice / (taux / 100);
+                const nouveauPrixVente = nouveauPrixAchat + benefice;
+                const nouveauCoefficient = nouveauPrixVente / nouveauPrixAchat;
+                prixAchatInput.value = nouveauPrixAchat.toFixed(2);
+                prixVenteInput.value = nouveauPrixVente.toFixed(2);
+                coefficientInput.value = nouveauCoefficient.toFixed(2);
+            }
+            // Cas 9 : Bénéfice + coefficient → prix d'achat, prix de vente, taux
+            else if (benefice !== null && coefficient !== null && !prixAchatInput.dataset.locked && !prixVenteInput.dataset.locked) {
+                const nouveauPrixAchat = benefice / (coefficient - 1);
+                const nouveauPrixVente = nouveauPrixAchat * coefficient;
+                const nouveauTaux = (benefice / nouveauPrixAchat) * 100;
+                prixAchatInput.value = nouveauPrixAchat.toFixed(2);
+                prixVenteInput.value = nouveauPrixVente.toFixed(2);
+                tauxInput.value = nouveauTaux.toFixed(2);
+            }
 
-    // Charger les valeurs au démarrage
-    chargerValeurs();
-</script>
+            // Afficher le résultat
+            const resultatElement = document.getElementById('resultat');
+            const beneficeFinal = parseFloat(beneficeInput.value) || 0;
+            if (beneficeFinal >= 0) {
+                resultatElement.innerHTML = `Bénéfice net : ${beneficeFinal.toFixed(2)} € <span class="emoji">🤑🤩🤌</span>`;
+                resultatElement.className = 'result profit';
+            } else {
+                resultatElement.innerHTML = `Déficit net : ${Math.abs(beneficeFinal).toFixed(2)} € <span class="emoji">👀😱😡😭</span>`;
+                resultatElement.className = 'result loss';
+            }
+
+            sauvegarderValeurs();
+        }
+
+        // Remise à zéro
+        function remiseAZero() {
+            document.getElementById('prixAchat').value = '';
+            document.getElementById('taux').value = '';
+            document.getElementById('coefficient').value = '';
+            document.getElementById('prixVente').value = '';
+            document.getElementById('benefice').value = '';
+            document.getElementById('resultat').innerHTML = 'Résultat : 0.00 €';
+            document.getElementById('resultat').className = 'result';
+            localStorage.clear();
+        }
+
+        // Charger les valeurs au démarrage
+        chargerValeurs();
+    </script>
+</body>
+</html>
