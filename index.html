@@ -1,263 +1,313 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculateur de Marge, Coefficient et Bénéfice Net</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .calculateur {
-            background-color: #34495e;
-            border-radius: 10px;
-            padding: 25px;
-            width: 100%;
-            max-width: 500px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
-        }
-        h1 {
-            text-align: center;
-            color: #f1c40f;
-            margin-bottom: 25px;
-        }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #e74c3c;
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: white;
-            color: black;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-        input[type="number"].calculated {
-            background-color: #f8f9fa;
-            box-shadow: 0 0 8px rgba(34, 167, 240, 0.6);
-        }
-        .button-group {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: #3498db;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #2980b9;
-        }
-        button:last-child {
-            background-color: #e74c3c;
-        }
-        button:last-child:hover {
-            background-color: #c0392b;
-        }
-    </style>
-<link rel="icon" href="monimage.jpg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculateur de marge et bénéfice</title>
+
+  <link rel="icon" href="favicon.png?v=20260227" type="image/png">
+  <link rel="apple-touch-icon" href="favicon.png?v=20260227">
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      color: #ffffff;
+      background: url('fond.jpg') no-repeat center center fixed;
+      background-size: cover;
+      position: relative;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-size: 28px;
+      font-weight: bold;
+      color: #ffcc00;
+    }
+
+    .field-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      box-sizing: border-box;
+      border: 2px solid #cccccc;
+      border-radius: 6px;
+      background-color: #ffffff;
+      color: #000000;
+      text-align: left;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    input:focus {
+      border-color: #ffcc00;
+      outline: none;
+      box-shadow: 0 0 20px rgba(255,204,0,0.8);
+    }
+
+    .taux-container {
+      display: flex;
+      flex-direction: column;
+      border: 2px solid #cccccc;
+      border-radius: 6px;
+      padding: 8px;
+      background-color: #1c1c1c;
+    }
+
+    .taux-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .taux-row input {
+      width: 100%;
+      padding: 8px;
+      font-size: 16px;
+      font-weight: 700;
+      border: 2px solid #cccccc;
+      border-radius: 4px;
+      background-color: #ffffff;
+      color: #000000;
+      text-align: left;
+      transition: box-shadow 0.3s;
+    }
+
+    .taux-row input:focus {
+      box-shadow: 0 0 20px rgba(255,204,0,0.8);
+      border-color: #ffcc00;
+    }
+
+    .taux-row span {
+      font-weight: bold;
+      min-width: 40px;
+      text-align: center;
+      font-size: 16px;
+      color: #ffffff;
+    }
+
+    .taux-ou {
+      text-align: center;
+      font-weight: bold;
+      color: #cccccc;
+      font-size: 16px;
+      margin: 4px 0;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .positif {
+      color: #2eff2e; /* vert fluo */
+      text-shadow: 0 0 8px #2eff2e;
+    }
+
+    .negatif {
+      color: #e74c3c; /* rouge */
+      text-shadow: 0 0 8px #e74c3c;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      background-color: #7a5af8;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
+      border-radius: 6px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #5c3dc0;
+    }
+
+    #reset {
+      background-color: #ffffff;
+      color: #333;
+    }
+
+    #reset:hover {
+      background-color: #dddddd;
+    }
+  </style>
 </head>
 <body>
-    <div class="calculateur">
-        <h1>Calculateur de Marge</h1>
+  <h1>Calculateur de marge et bénéfice</h1>
 
-        <div class="form-group">
-            <label for="prixAchat">Prix d'achat net (€)</label>
-            <input type="number" id="prixAchat" step="0.01" placeholder="0.00">
-        </div>
+  <div class="field-group">
+    <label for="prixAchat">Prix d'achat net (€)</label>
+    <input type="number" step="any" id="prixAchat" placeholder="Entrez le prix d'achat">
+  </div>
 
-        <div class="form-group">
-            <label for="tauxPourcentage">Taux (%)</label>
-            <input type="number" id="tauxPourcentage" step="0.01" placeholder="0.00">
-        </div>
-
-        <div class="form-group">
-            <label for="coefficient">Coefficient</label>
-            <input type="number" id="coefficient" step="0.001" placeholder="0.000">
-        </div>
-
-        <div class="form-group">
-            <label for="prixVente">Prix de vente (€)</label>
-            <input type="number" id="prixVente" step="0.01" placeholder="0.00">
-        </div>
-
-        <div class="form-group">
-            <label for="beneficeNet">Bénéfice net (€)</label>
-            <input type="number" id="beneficeNet" step="0.01" placeholder="0.00">
-        </div>
-
-        <div class="button-group">
-            <button id="calculer">Calculer</button>
-            <button id="remiseZero">Remise à zéro</button>
-        </div>
+  <div class="field-group">
+    <label>Taux applicable</label>
+    <div class="taux-container">
+      <div class="taux-row">
+        <input type="number" step="any" id="pourcentage" placeholder="%">
+        <span>%</span>
+      </div>
+      <div class="taux-ou">OU</div>
+      <div class="taux-row">
+        <input type="number" step="any" id="coefficient" placeholder="Coefficient">
+        <span>Coef</span>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // Récupération des éléments du DOM
-        const prixAchatInput = document.getElementById('prixAchat');
-        const tauxPourcentageInput = document.getElementById('tauxPourcentage');
-        const coefficientInput = document.getElementById('coefficient');
-        const prixVenteInput = document.getElementById('prixVente');
-        const beneficeNetInput = document.getElementById('beneficeNet');
-        const calculerButton = document.getElementById('calculer');
-        const remiseZeroButton = document.getElementById('remiseZero');
+  <div class="field-group">
+    <label for="prixVente">Prix de vente (€)</label>
+    <input type="number" step="any" id="prixVente" placeholder="Entrez ou sera calculé automatiquement">
+  </div>
 
-        // Chargement des données depuis localStorage
-        function chargerDonnees() {
-            const data = JSON.parse(localStorage.getItem('calculateurMarge'));
-            if (data) {
-                prixAchatInput.value = data.prixAchat || '';
-                tauxPourcentageInput.value = data.tauxPourcentage || '';
-                coefficientInput.value = data.coefficient || '';
-                prixVenteInput.value = data.prixVente || '';
-                beneficeNetInput.value = data.beneficeNet || '';
-            }
-        }
+  <div class="field-group">
+    <label for="benefice">Bénéfice net (€)</label>
+    <input type="number" step="any" id="benefice" placeholder="Entrez ou sera calculé automatiquement">
+  </div>
 
-        // Sauvegarde des données dans localStorage
-        function sauvegarderDonnees() {
-            const data = {
-                prixAchat: prixAchatInput.value,
-                tauxPourcentage: tauxPourcentageInput.value,
-                coefficient: coefficientInput.value,
-                prixVente: prixVenteInput.value,
-                beneficeNet: beneficeNetInput.value
-            };
-            localStorage.setItem('calculateurMarge', JSON.stringify(data));
-        }
+  <button id="calculer">Calculer</button>
+  <button id="reset">Remise à zéro</button>
 
-        // Conversion entre pourcentage et coefficient
-        function convertirTauxCoefficient(taux) {
-            return (1 + taux / 100).toFixed(3);
-        }
+  <div id="result"></div>
 
-        function convertirCoefficientTaux(coefficient) {
-            return ((coefficient - 1) * 100).toFixed(2);
-        }
+  <script>
+    const prixAchat = document.getElementById('prixAchat');
+    const pourcentage = document.getElementById('pourcentage');
+    const coefficient = document.getElementById('coefficient');
+    const prixVente = document.getElementById('prixVente');
+    const benefice = document.getElementById('benefice');
+    const result = document.getElementById('result');
+    const btn = document.getElementById('calculer');
+    const resetBtn = document.getElementById('reset');
 
-        // Calcul du bénéfice net
-        function calculerBeneficeNet(prixAchat, prixVente) {
-            return (prixVente - prixAchat).toFixed(2);
-        }
+    const parseNumber = (val) => val ? parseFloat(val.toString().replace(',', '.')) : NaN;
 
-        // Calcul du prix de vente
-        function calculerPrixVente(prixAchat, taux) {
-            return (prixAchat * (1 + taux / 100)).toFixed(2);
-        }
+    window.addEventListener('load', () => {
+      if(localStorage.getItem('prixAchat')) prixAchat.value = localStorage.getItem('prixAchat');
+      if(localStorage.getItem('pourcentage')) pourcentage.value = localStorage.getItem('pourcentage');
+      if(localStorage.getItem('coefficient')) coefficient.value = localStorage.getItem('coefficient');
+      if(localStorage.getItem('prixVente')) prixVente.value = localStorage.getItem('prixVente');
+      if(localStorage.getItem('benefice')) benefice.value = localStorage.getItem('benefice');
+      if(localStorage.getItem('result')) result.innerHTML = localStorage.getItem('result');
+    });
 
-        // Calcul du prix d'achat
-        function calculerPrixAchat(prixVente, taux) {
-            return (prixVente / (1 + taux / 100)).toFixed(2);
-        }
+    const syncTaux = (source) => {
+      const achat = parseNumber(prixAchat.value);
+      if (!achat) return;
+      if (source==='pourcentage'){
+        const val = parseNumber(pourcentage.value);
+        coefficient.value = !isNaN(val)? (1+val/100).toFixed(3): '';
+      } else {
+        const val = parseNumber(coefficient.value);
+        pourcentage.value = !isNaN(val)? ((val-1)*100).toFixed(2): '';
+      }
+    };
 
-        // Calcul du taux
-        function calculerTaux(prixAchat, prixVente) {
-            return (((prixVente - prixAchat) / prixAchat) * 100).toFixed(2);
-        }
+    pourcentage.addEventListener('input', ()=>syncTaux('pourcentage'));
+    coefficient.addEventListener('input', ()=>syncTaux('coefficient'));
 
-        // Mise à jour des champs calculés
-        function mettreAJourChamps() {
-            const prixAchat = parseFloat(prixAchatInput.value) || 0;
-            const tauxPourcentage = parseFloat(tauxPourcentageInput.value) || 0;
-            const coefficient = parseFloat(coefficientInput.value) || 0;
-            const prixVente = parseFloat(prixVenteInput.value) || 0;
-            const beneficeNet = parseFloat(beneficeNetInput.value) || 0;
+    const calculate = () => {
+      let achat = parseNumber(prixAchat.value);
+      let pourc = parseNumber(pourcentage.value);
+      let coef = parseNumber(coefficient.value);
+      let vente = parseNumber(prixVente.value);
+      let benef = parseNumber(benefice.value);
 
-            if (prixAchat > 0 && tauxPourcentage > 0) {
-                const nouveauPrixVente = calculerPrixVente(prixAchat, tauxPourcentage);
-                prixVenteInput.value = nouveauPrixVente;
-                coefficientInput.value = convertirTauxCoefficient(tauxPourcentage);
-                beneficeNetInput.value = calculerBeneficeNet(prixAchat, nouveauPrixVente);
-            } else if (prixVente > 0 && prixAchat > 0) {
-                const nouveauTaux = calculerTaux(prixAchat, prixVente);
-                tauxPourcentageInput.value = nouveauTaux;
-                coefficientInput.value = convertirTauxCoefficient(nouveauTaux);
-                beneficeNetInput.value = calculerBeneficeNet(prixAchat, prixVente);
-            } else if (beneficeNet > 0 && prixAchat > 0) {
-                const nouveauPrixVente = (prixAchat + beneficeNet).toFixed(2);
-                prixVenteInput.value = nouveauPrixVente;
-                const nouveauTaux = calculerTaux(prixAchat, nouveauPrixVente);
-                tauxPourcentageInput.value = nouveauTaux;
-                coefficientInput.value = convertirTauxCoefficient(nouveauTaux);
-            } else if (prixVente > 0 && tauxPourcentage > 0) {
-                const nouveauPrixAchat = calculerPrixAchat(prixVente, tauxPourcentage);
-                prixAchatInput.value = nouveauPrixAchat;
-                beneficeNetInput.value = calculerBeneficeNet(nouveauPrixAchat, prixVente);
-                coefficientInput.value = convertirTauxCoefficient(tauxPourcentage);
-            } else if (prixVente > 0 && coefficient > 0) {
-                const nouveauPrixAchat = (prixVente / coefficient).toFixed(2);
-                prixAchatInput.value = nouveauPrixAchat;
-                const nouveauTaux = convertirCoefficientTaux(coefficient);
-                tauxPourcentageInput.value = nouveauTaux;
-                beneficeNetInput.value = calculerBeneficeNet(nouveauPrixAchat, prixVente);
-            }
+      let computedAchat = achat;
+      let computedVente, computedBenef, computedCoef, computedPourc;
 
-            // Ajout de l'effet glow aux champs calculés
-            prixVenteInput.classList.add('calculated');
-            coefficientInput.classList.add('calculated');
-            beneficeNetInput.classList.add('calculated');
-            tauxPourcentageInput.classList.add('calculated');
-        }
+      if(!isNaN(achat) && (!isNaN(pourc) || !isNaN(coef))) {
+        const c = !isNaN(coef)? coef : 1+pourc/100;
+        computedVente = achat*c;
+        computedBenef = computedVente-achat;
+        computedCoef = c;
+        computedPourc = (c-1)*100;
+      } else if(!isNaN(achat) && !isNaN(benef)) {
+        computedVente = achat+benef;
+        computedBenef = benef;
+        computedCoef = computedVente/achat;
+        computedPourc = (computedCoef-1)*100;
+      } else if(!isNaN(achat) && !isNaN(vente)) {
+        computedVente = vente;
+        computedBenef = computedVente-achat;
+        computedCoef = computedVente/achat;
+        computedPourc = (computedCoef-1)*100;
+      } else if(!isNaN(vente) && (!isNaN(pourc) || !isNaN(coef))) {
+        const c = !isNaN(coef)? coef : 1+pourc/100;
+        computedAchat = vente/c;
+        computedVente = vente;
+        computedBenef = computedVente-computedAchat;
+        computedCoef = c;
+        computedPourc = (c-1)*100;
+      } else if(!isNaN(vente) && !isNaN(benef)) {
+        computedAchat = vente-benef;
+        computedVente = vente;
+        computedBenef = benef;
+        computedCoef = computedVente/computedAchat;
+        computedPourc = (computedCoef-1)*100;
+      } else if(!isNaN(benef) && (!isNaN(pourc) || !isNaN(coef))) {
+        const c = !isNaN(coef)? coef : 1+pourc/100;
+        computedAchat = benef/(c-1);
+        computedVente = computedAchat*c;
+        computedBenef = benef;
+        computedCoef = c;
+        computedPourc = (c-1)*100;
+      }
 
-        // Remise à zéro
-        function remiseAZero() {
-            prixAchatInput.value = '';
-            tauxPourcentageInput.value = '';
-            coefficientInput.value = '';
-            prixVenteInput.value = '';
-            beneficeNetInput.value = '';
-            localStorage.removeItem('calculateurMarge');
-            prixVenteInput.classList.remove('calculated');
-            coefficientInput.classList.remove('calculated');
-            beneficeNetInput.classList.remove('calculated');
-            tauxPourcentageInput.classList.remove('calculated');
-        }
+      prixAchat.value = computedAchat? computedAchat.toFixed(2): '';
+      prixVente.value = computedVente? computedVente.toFixed(2): '';
+      benefice.value = computedBenef? computedBenef.toFixed(2): '';
+      coefficient.value = computedCoef? computedCoef.toFixed(3): '';
+      pourcentage.value = computedPourc? computedPourc.toFixed(2): '';
 
-        // Événements
-        calculerButton.addEventListener('click', () => {
-            mettreAJourChamps();
-            sauvegarderDonnees();
-        });
+      // Gestion bénéfice/déficit avec icônes et couleurs
+      if(computedBenef>=0){
+        result.innerHTML = `Bénéfice net : <span class="positif">${computedBenef.toFixed(2)} € 🤑🤩🤌</span>`;
+      } else {
+        result.innerHTML = `Déficit : <span class="negatif">${computedBenef.toFixed(2)} € 👀😱😡😭</span>`;
+      }
 
-        remiseZeroButton.addEventListener('click', remiseAZero);
+      localStorage.setItem('prixAchat', prixAchat.value);
+      localStorage.setItem('prixVente', prixVente.value);
+      localStorage.setItem('benefice', benefice.value);
+      localStorage.setItem('pourcentage', pourcentage.value);
+      localStorage.setItem('coefficient', coefficient.value);
+      localStorage.setItem('result', result.innerHTML);
+    };
 
-        // Conversion automatique entre pourcentage et coefficient
-        tauxPourcentageInput.addEventListener('input', () => {
-            const taux = parseFloat(tauxPourcentageInput.value) || 0;
-            coefficientInput.value = convertirTauxCoefficient(taux);
-            sauvegarderDonnees();
-        });
+    btn.addEventListener('click', calculate);
 
-        coefficientInput.addEventListener('input', () => {
-            const coeff = parseFloat(coefficientInput.value) || 0;
-            tauxPourcentageInput.value = convertirCoefficientTaux(coeff);
-            sauvegarderDonnees();
-        });
-
-        // Chargement des données au démarrage
-        chargerDonnees();
-    </script>
+    resetBtn.addEventListener('click', ()=>{
+      prixAchat.value='';
+      pourcentage.value='';
+      coefficient.value='';
+      prixVente.value='';
+      benefice.value='';
+      result.innerHTML='';
+      localStorage.clear();
+    });
+  </script>
 </body>
 </html>
